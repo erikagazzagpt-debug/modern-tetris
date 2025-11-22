@@ -1,4 +1,3 @@
-/* JS FILE: game.js */
 const startScreen = document.getElementById('start-screen');
 const gameScreen = document.getElementById('game-screen');
 const gameoverScreen = document.getElementById('gameover-screen');
@@ -17,12 +16,20 @@ const ROWS = canvas.height / grid;
 let board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
 let score = 0;
 
+const COLORS = {
+  1: 'orange',
+  2: 'cyan',
+  3: 'pink',
+  4: 'red',
+  5: 'lightgreen'
+};
+
 const SHAPES = [
   [[1, 1, 1, 1]],
-  [[1, 1], [1, 1]],
-  [[0, 1, 0], [1, 1, 1]],
-  [[1, 0, 0], [1, 1, 1]],
-  [[0, 0, 1], [1, 1, 1]],
+  [[2, 2], [2, 2]],
+  [[0, 3, 0], [3, 3, 3]],
+  [[4, 0, 0], [4, 4, 4]],
+  [[0, 0, 5], [5, 5, 5]]
 ];
 
 function randomPiece() {
@@ -57,7 +64,7 @@ function rotate(piece) {
 function merge(board, piece) {
   piece.shape.forEach((row, y) => {
     row.forEach((value, x) => {
-      if (value) board[piece.y + y][piece.x + x] = value;
+      if (value) board[piece.y + y][piece.x + x] = 99;
     });
   });
 }
@@ -74,13 +81,13 @@ function clearLines() {
 }
 
 function draw() {
-  ctx.fillStyle = '#111';
+  ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   board.forEach((row, y) => {
     row.forEach((value, x) => {
       if (value) {
-        ctx.fillStyle = 'white';
+        ctx.fillStyle = value === 99 ? 'white' : COLORS[value];
         ctx.fillRect(x * grid, y * grid, grid - 1, grid - 1);
       }
     });
@@ -90,7 +97,7 @@ function draw() {
     piece.shape.forEach((row, y) => {
       row.forEach((value, x) => {
         if (value) {
-          ctx.fillStyle = 'cyan';
+          ctx.fillStyle = COLORS[value];
           ctx.fillRect((piece.x + x) * grid, (piece.y + y) * grid, grid - 1, grid - 1);
         }
       });
@@ -102,6 +109,7 @@ function update(time = 0) {
   const delta = time - lastTime;
   lastTime = time;
   dropCounter += delta;
+
   if (dropCounter > dropInterval) {
     piece.y++;
     if (collide(board, piece)) {

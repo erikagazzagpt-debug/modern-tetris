@@ -1,4 +1,3 @@
-<!-- HTML FILE: index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,15 +19,15 @@
       <h2>Score: <span id="score">0</span></h2>
       <canvas id="tetris" width="240" height="480"></canvas>
       <div class="controls">
-        <button id="left">◀</button>
-        <button id="rotate">⟳</button>
-        <button id="right">▶</button>
-        <button id="down">▼</button>
+        <button class="ctrl" id="left">◀</button>
+        <button class="ctrl" id="rotate">⟳</button>
+        <button class="ctrl" id="right">▶</button>
+        <button class="ctrl" id="down">▼</button>
       </div>
     </div>
   </div>
 
-  <div id="gameover-screen" class="screen hidden">
+  <div id="gameover-screen" class="hidden screen">
     <div class="box">
       <h1>OH NO! GAME OVER!!!</h1>
       <button onclick="location.reload()">PLAY AGAIN</button>
@@ -38,4 +37,3 @@
   <script src="game.js"></script>
 </body>
 </html>
-
