@@ -55,10 +55,8 @@ function playerReset() {
     player.pos.x = (arena[0].length / 2 | 0) - (player.matrix.length / 2 | 0);
     drawNextPiece();
     if (collide(arena, player)) {
+        gameOver = true;
         document.getElementById("gameover-screen").classList.remove("d-none");
-        arena.forEach(row => row.fill(0));
-        player.score = 0;
-        updateScore();
     }
 }
 function playerDrop() {
@@ -72,22 +70,30 @@ function playerDrop() {
     }
     dropCounter = 0;
 }
-function drawMatrix(matrix, offset, colorOverride = null) {
-    matrix.forEach((row, y) => { row.forEach((value, x) => { if (value !== 0) { ctx.fillStyle = colorOverride || player.color; ctx.fillRect(x + offset.x, y + offset.y, 1, 1); } }); });
+function drawMatrix(matrix, offset, context, colorOverride = null) {
+    matrix.forEach((row, y) => {
+        row.forEach((value, x) => {
+            if (value !== 0) {
+                context.fillStyle = colorOverride || player.color;
+                context.fillRect(x + offset.x, y + offset.y, 1, 1);
+            }
+        });
+    });
 }
 function drawNextPiece() {
     nextCtx.clearRect(0, 0, 4, 4);
     const type = pieces[(Math.random() * pieces.length) | 0];
     nextPiece.matrix = createPiece(type);
     nextCtx.fillStyle = colors[(Math.random() * colors.length) | 0];
-    drawMatrix(nextPiece.matrix, { x: 0.5, y: 0.5 }, nextCtx.fillStyle);
+    drawMatrix(nextPiece.matrix, { x: 0.5, y: 0.5 }, nextCtx, nextCtx.fillStyle);
 }
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawMatrix(arena, { x: 0, y: 0 });
-    drawMatrix(player.matrix, player.pos);
+    drawMatrix(arena, { x: 0, y: 0 }, ctx);
+    drawMatrix(player.matrix, player.pos, ctx);
 }
 function update(time = 0) {
+    if (gameOver) return;
     dropCounter += time - lastTime;
     lastTime = time;
     if (dropCounter > dropInterval) { playerDrop(); }
@@ -100,7 +106,19 @@ const nextPiece = { matrix: null };
 let lastTime = 0;
 let dropInterval = 700;
 let dropCounter = 0;
+let gameOver = false;
+
 function updateScore() { document.getElementById("score").textContent = player.score; }
+function resetGame() {
+    arena.forEach(row => row.fill(0));
+    player.score = 0;
+    updateScore();
+    gameOver = false;
+    document.getElementById("gameover-screen").classList.add("d-none");
+    playerReset();
+    update();
+}
+
 document.getElementById("left").onclick = () => { player.pos.x--; if (collide(arena, player)) player.pos.x++; };
 document.getElementById("right").onclick = () => { player.pos.x++; if (collide(arena, player)) player.pos.x--; };
 document.getElementById("rotate").onclick = () => { const r = rotate(player.matrix); const p = player.matrix; player.matrix = r; if (collide(arena, player)) player.matrix = p; };
@@ -112,3 +130,29 @@ document.getElementById("startBtn").onclick = () => {
     updateScore();
     update();
 };
+document.getElementById("restartBtn").onclick = resetGame;
+
+// Prevent double tap zoom and other default touch actions
+document.addEventListener('touchstart', function (event) {
+    if (event.touches.length > 1) {
+        event.preventDefault(); // Prevent multi-touch zoom
+    }
+}, { passive: false });
+
+document.addEventListener('touchmove', function (event) {
+    event.preventDefault(); // Prevent scrolling/panning
+}, { passive: false });
+
+let lastTouchEnd = 0;
+document.addEventListener('touchend', function (event) {
+    const now = (new Date()).getTime();
+    if (now - lastTouchEnd <= 300) {
+        event.preventDefault(); // Prevent double-tap zoom
+    }
+    lastTouchEnd = now;
+}, { passive: false });
+
+// Prevent context menu on long press
+document.addEventListener('contextmenu', function (event) {
+    event.preventDefault();
+});

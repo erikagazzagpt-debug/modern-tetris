@@ -37,6 +37,20 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+
+    /* Disable mobile interactions */
+    touch-action: none;
+    /* Prevent browser handling of gestures */
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE10+/Edge */
+    user-select: none;
+    /* Standard */
+    -webkit-touch-callout: none;
+    /* Disable iOS context menu */
 }
 
 /* =========================================
@@ -213,6 +227,22 @@ h6 {
     text-shadow: 0 0 15px var(--secondary-color);
     font-family: var(--font-main);
     animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#restartBtn {
+    font-family: var(--font-main);
+    font-weight: bold;
+    letter-spacing: 2px;
+    box-shadow: 0 0 15px red;
+    transition: all 0.3s ease;
+    background: #ff0055;
+    border: none;
+}
+
+#restartBtn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px red;
+    background: #ff3377;
 }
 
 /* =========================================
