@@ -17,13 +17,25 @@ body {
   text-align: center;
   border-radius: 10px;
 }
-#game-layout {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
+#top-info { display: flex; justify-content: space-between; align-items: center; }
+#next-preview {
+  background: rgba(0,0,0,0.5);
+  padding: 8px;
+  border: 1px solid white;
+  border-radius: 6px;
+  width: 85px;
 }
-#tetris, #next { background: #000; image-rendering: pixelated; margin-top: 10px; }
-.controls { margin-top: 10px; }
+#tetris, #next {
+  background: #000;
+  image-rendering: pixelated;
+  margin-top: 10px;
+}
+.controls {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
 .ctrl {
   margin: 5px;
   padding: 12px;
@@ -33,7 +45,6 @@ body {
   border: 2px solid #772200;
   border-radius: 6px;
 }
-.next-box { width: 120px; }
 .flash {
   position: fixed;
   top: 0;
