@@ -1,9 +1,263 @@
-body{margin:0;font-family:'Courier New',monospace;overflow:hidden;touch-action:manipulation;}
-.pixel-bg{background-image:url('background.jpg');background-size:cover;background-position:center;background-repeat:no-repeat;}
-.screen{display:flex;justify-content:center;align-items:center;height:100vh;}
-.hidden{display:none!important;}
-.box{background:rgba(0,0,0,0.7);padding:20px;border:2px solid white;text-align:center;border-radius:10px;}
-#tetris{background:#4C5375;image-rendering:pixelated;margin-top:10px;}
-#next{background:#000;image-rendering:pixelated;}
-.flash{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,0,0.5);pointer-events:none;opacity:0;transition:opacity .2s;}
-.flash.show{opacity:1;}
+/* =========================================
+   1. Variables & Reset
+   ========================================= */
+:root {
+    --primary-color: #00d2ff;
+    /* Cyan neon */
+    --secondary-color: #ff00e6;
+    /* Magenta neon */
+    --accent-color: #ffc107;
+    /* Yellow/Gold */
+    --bg-overlay: rgba(12, 12, 20, 0.85);
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --text-color: #ffffff;
+    --font-main: 'Courier New', monospace;
+    /* Retro arcade feel */
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    /* Updated to the correct file name found in directory */
+    background: url("background.jpeg") no-repeat center center fixed;
+    background-size: cover;
+    background-color: #0b0d17;
+    /* Fallback dark space color */
+    font-family: var(--font-main);
+    color: var(--text-color);
+    overflow: hidden;
+    /* Prevent scrolling */
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* =========================================
+   2. Start Screen
+   ========================================= */
+.start-screen {
+    text-align: center;
+    z-index: 10;
+    background: var(--bg-overlay);
+    padding: 3rem;
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 30px rgba(0, 210, 255, 0.2);
+    max-width: 90%;
+}
+
+.title {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--accent-color);
+    text-shadow: 0 0 10px var(--accent-color), 0 0 20px orange;
+    letter-spacing: 4px;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+}
+
+/* Bootstrap override for start button */
+#startBtn {
+    font-family: var(--font-main);
+    font-weight: bold;
+    letter-spacing: 2px;
+    box-shadow: 0 0 15px var(--accent-color);
+    transition: all 0.3s ease;
+}
+
+#startBtn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px var(--accent-color);
+}
+
+/* =========================================
+   3. Game Screen Layout
+   ========================================= */
+.game-screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+/* Utility to ensure d-none works if bootstrap fails or for specificity */
+.d-none {
+    display: none !important;
+}
+
+.tetris-container {
+    position: relative;
+    padding: 20px;
+    background: var(--bg-overlay);
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* =========================================
+   4. HUD (Score & Next Piece)
+   ========================================= */
+.score-box,
+.next-box {
+    background: var(--glass-bg);
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: 1px solid var(--glass-border);
+    text-align: center;
+    min-width: 90px;
+    color: #fff;
+}
+
+.score-label,
+h6 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: #ccc;
+    margin: 0 0 5px 0;
+    letter-spacing: 1px;
+}
+
+.score-value {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-shadow: 0 0 8px var(--primary-color);
+}
+
+/* =========================================
+   5. Canvas (Game Board)
+   ========================================= */
+#tetris {
+    background: rgba(0, 0, 0, 0.9);
+    /* Darker board background */
+    border: 2px solid var(--glass-border);
+    border-radius: 4px;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 1);
+    display: block;
+    margin-top: 10px;
+}
+
+#nextPiece {
+    background: transparent;
+}
+
+/* =========================================
+   6. Controls
+   ========================================= */
+.controls {
+    margin-top: 20px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.control-btn {
+    background: linear-gradient(145deg, #ffc107, #ff9800) !important;
+    border: none !important;
+    color: #000 !important;
+    font-size: 1.5rem;
+    width: 55px;
+    height: 55px;
+    border-radius: 50% !important;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+    transition: transform 0.1s, box-shadow 0.1s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 !important;
+    /* Reset padding */
+}
+
+.control-btn:active {
+    transform: scale(0.92);
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.4);
+}
+
+/* =========================================
+   7. Game Over Screen
+   ========================================= */
+.gameover-screen {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+}
+
+.gameover-box {
+    background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+    padding: 40px 60px;
+    border-radius: 20px;
+    text-align: center;
+    border: 2px solid var(--secondary-color);
+    box-shadow: 0 0 40px var(--secondary-color);
+    font-size: 2rem;
+    color: var(--secondary-color);
+    text-shadow: 0 0 15px var(--secondary-color);
+    font-family: var(--font-main);
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* =========================================
+   8. Animations & Effects
+   ========================================= */
+@keyframes lightning {
+    0% {
+        background-color: rgba(255, 255, 255, 0.8);
+    }
+
+    100% {
+        background-color: rgba(0, 0, 0, 0.9);
+    }
+}
+
+.flash {
+    animation: lightning 0.15s ease-in-out;
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* =========================================
+   9. Responsive Adjustments
+   ========================================= */
+@media (max-height: 750px) {
+    .title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .tetris-container {
+        transform: scale(0.85);
+    }
+
+    .start-screen {
+        padding: 2rem;
+    }
+}
