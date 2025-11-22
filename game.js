@@ -1,6 +1,7 @@
 const startScreen = document.getElementById('start-screen');
 const gameScreen = document.getElementById('game-screen');
 const gameoverScreen = document.getElementById('gameover-screen');
+const flash = document.getElementById('flash');
 
 document.getElementById('start-btn').onclick = () => {
   startScreen.classList.add('hidden');
@@ -9,10 +10,14 @@ document.getElementById('start-btn').onclick = () => {
 };
 
 const canvas = document.getElementById('tetris');
+const nextCanvas = document.getElementById('next');
 const ctx = canvas.getContext('2d');
+const nextCtx = nextCanvas.getContext('2d');
+
 const grid = 20;
 const COLS = canvas.width / grid;
 const ROWS = canvas.height / grid;
+
 let board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
 let score = 0;
 
@@ -38,6 +43,7 @@ function randomPiece() {
 }
 
 let piece = null;
+let nextPiece = randomPiece();
 let dropCounter = 0;
 let dropInterval = 500;
 let lastTime = 0;
@@ -69,15 +75,37 @@ function merge(board, piece) {
   });
 }
 
+function drawNext() {
+  nextCtx.fillStyle = '#000';
+  nextCtx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
+
+  nextPiece.shape.forEach((row, y) => {
+    row.forEach((value, x) => {
+      if (value) {
+        nextCtx.fillStyle = COLORS[value];
+        nextCtx.fillRect(x * 20, y * 20, 19, 19);
+      }
+    });
+  });
+}
+
+function lightningFlash() {
+  flash.classList.add('show');
+  setTimeout(() => flash.classList.remove('show'), 150);
+}
+
 function clearLines() {
+  let cleared = false;
   for (let y = ROWS - 1; y >= 0; y--) {
     if (board[y].every(v => v !== 0)) {
       board.splice(y, 1);
       board.unshift(Array(COLS).fill(0));
       score += 100;
-      document.getElementById('score').textContent = score;
+      cleared = true;
     }
   }
+  if (cleared) lightningFlash();
+  document.getElementById('score').textContent = score;
 }
 
 function draw() {
@@ -116,7 +144,9 @@ function update(time = 0) {
       piece.y--;
       merge(board, piece);
       clearLines();
-      piece = randomPiece();
+      piece = nextPiece;
+      nextPiece = randomPiece();
+      drawNext();
       if (collide(board, piece)) return endGame();
     }
     dropCounter = 0;
@@ -128,6 +158,8 @@ function update(time = 0) {
 
 function startGame() {
   piece = randomPiece();
+  nextPiece = randomPiece();
+  drawNext();
   update();
 }
 

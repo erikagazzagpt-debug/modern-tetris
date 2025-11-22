@@ -15,24 +15,33 @@
   </div>
 
   <div id="game-screen" class="screen hidden">
-    <div id="game-container" class="box">
-      <h2>Score: <span id="score">0</span></h2>
-      <canvas id="tetris" width="240" height="480"></canvas>
-      <div class="controls">
-        <button class="ctrl" id="left">◀</button>
-        <button class="ctrl" id="rotate">⟳</button>
-        <button class="ctrl" id="right">▶</button>
-        <button class="ctrl" id="down">▼</button>
+    <div id="game-layout">
+      <div id="game-container" class="box">
+        <h2>Score: <span id="score">0</span></h2>
+        <canvas id="tetris" width="240" height="480"></canvas>
+        <div class="controls">
+          <button class="ctrl" id="left">◀</button>
+          <button class="ctrl" id="rotate">⟳</button>
+          <button class="ctrl" id="right">▶</button>
+          <button class="ctrl" id="down">▼</button>
+        </div>
+      </div>
+
+      <div id="next-box" class="box next-box">
+        <h3>Next</h3>
+        <canvas id="next" width="80" height="80"></canvas>
       </div>
     </div>
   </div>
 
-  <div id="gameover-screen" class="hidden screen">
+  <div id="gameover-screen" class="screen hidden">
     <div class="box">
       <h1>OH NO! GAME OVER!!!</h1>
       <button onclick="location.reload()">PLAY AGAIN</button>
     </div>
   </div>
+
+  <div id="flash" class="flash hidden"></div>
 
   <script src="game.js"></script>
 </body>
