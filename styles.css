@@ -1,0 +1,26 @@
+/* CSS FILE: styles.css */
+body {
+  margin: 0;
+  font-family: 'Press Start 2P', monospace;
+  background: black url('stars-background.png') repeat;
+  background-size: 256px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.screen { display: flex; justify-content: center; align-items: center; height: 100%; }
+.hidden { display: none; }
+.box { background: rgba(0,0,0,0.7); padding: 20px; border: 2px solid white; text-align: center; border-radius: 10px; }
+#tetris { background: #111; image-rendering: pixelated; margin-top: 10px; }
+.controls button {
+  margin: 5px;
+  padding: 12px;
+  font-size: 14px;
+  background: #333;
+  color: white;
+  border: 2px solid #555;
+  border-radius: 6px;
+}

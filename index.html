@@ -1,0 +1,41 @@
+<!-- HTML FILE: index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Retro Space Tetris</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="start-screen" class="screen">
+    <div class="box">
+      <h1>Retro Space Tetris</h1>
+      <button id="start-btn">START</button>
+    </div>
+  </div>
+
+  <div id="game-screen" class="screen hidden">
+    <div id="game-container" class="box">
+      <h2>Score: <span id="score">0</span></h2>
+      <canvas id="tetris" width="240" height="480"></canvas>
+      <div class="controls">
+        <button id="left">◀</button>
+        <button id="rotate">⟳</button>
+        <button id="right">▶</button>
+        <button id="down">▼</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="gameover-screen" class="screen hidden">
+    <div class="box">
+      <h1>OH NO! GAME OVER!!!</h1>
+      <button onclick="location.reload()">PLAY AGAIN</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
+
