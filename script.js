@@ -46,14 +46,30 @@ function collide(arena, player) {
 function merge(arena, player) {
     player.matrix.forEach((row, y) => { row.forEach((value, x) => { if (value !== 0) { arena[y + player.pos.y][x + player.pos.x] = white; } }); });
 }
-function rotate(matrix) { return matrix.map((_, i) => matrix.map(row => row[i]).reverse()); }
-function playerReset() {
+function generateRandomPiece() {
     const type = pieces[(Math.random() * pieces.length) | 0];
-    player.matrix = createPiece(type);
-    player.color = colors[(Math.random() * colors.length) | 0];
+    return {
+        matrix: createPiece(type),
+        color: colors[(Math.random() * colors.length) | 0]
+    };
+}
+
+function playerReset() {
+    if (!nextPieceData) {
+        nextPieceData = generateRandomPiece();
+    }
+
+    player.matrix = nextPieceData.matrix;
+    player.color = nextPieceData.color;
+
+    // Generate the NEXT piece
+    nextPieceData = generateRandomPiece();
+
     player.pos.y = 0;
     player.pos.x = (arena[0].length / 2 | 0) - (player.matrix.length / 2 | 0);
+
     drawNextPiece();
+
     if (collide(arena, player)) {
         gameOver = true;
         document.getElementById("gameover-screen").classList.remove("d-none");
@@ -82,10 +98,9 @@ function drawMatrix(matrix, offset, context, colorOverride = null) {
 }
 function drawNextPiece() {
     nextCtx.clearRect(0, 0, 4, 4);
-    const type = pieces[(Math.random() * pieces.length) | 0];
-    nextPiece.matrix = createPiece(type);
-    nextCtx.fillStyle = colors[(Math.random() * colors.length) | 0];
-    drawMatrix(nextPiece.matrix, { x: 0.5, y: 0.5 }, nextCtx, nextCtx.fillStyle);
+    if (nextPieceData) {
+        drawMatrix(nextPieceData.matrix, { x: 0.5, y: 0.5 }, nextCtx, nextPieceData.color);
+    }
 }
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -102,7 +117,8 @@ function update(time = 0) {
 }
 const arena = Array.from({ length: 24 }, () => Array(12).fill(0));
 const player = { pos: { x: 0, y: 0 }, matrix: null, color: null, score: 0 };
-const nextPiece = { matrix: null };
+let nextPieceData = null;
+const nextPiece = { matrix: null }; // Keeping for compatibility if referenced elsewhere, but nextPieceData is the source of truth
 let lastTime = 0;
 let dropInterval = 700;
 let dropCounter = 0;
@@ -119,10 +135,41 @@ function resetGame() {
     update();
 }
 
-document.getElementById("left").onclick = () => { player.pos.x--; if (collide(arena, player)) player.pos.x++; };
-document.getElementById("right").onclick = () => { player.pos.x++; if (collide(arena, player)) player.pos.x--; };
 document.getElementById("rotate").onclick = () => { const r = rotate(player.matrix); const p = player.matrix; player.matrix = r; if (collide(arena, player)) player.matrix = p; };
-document.getElementById("down").onclick = playerDrop;
+
+function addRepeatListener(elementId, action) {
+    const element = document.getElementById(elementId);
+    let interval;
+    let timeout;
+
+    const start = (e) => {
+        if (e.cancelable) e.preventDefault(); // Prevent default touch behavior if needed
+        action();
+        clearTimeout(timeout);
+        clearInterval(interval);
+
+        timeout = setTimeout(() => {
+            interval = setInterval(action, 80); // Repeat every 80ms
+        }, 200); // Wait 200ms before starting repeat
+    };
+
+    const stop = () => {
+        clearTimeout(timeout);
+        clearInterval(interval);
+    };
+
+    element.addEventListener('mousedown', start);
+    element.addEventListener('touchstart', start, { passive: false });
+
+    element.addEventListener('mouseup', stop);
+    element.addEventListener('mouseleave', stop);
+    element.addEventListener('touchend', stop);
+    element.addEventListener('touchcancel', stop);
+}
+
+addRepeatListener("left", () => { player.pos.x--; if (collide(arena, player)) player.pos.x++; });
+addRepeatListener("right", () => { player.pos.x++; if (collide(arena, player)) player.pos.x--; });
+addRepeatListener("down", playerDrop);
 document.getElementById("startBtn").onclick = () => {
     document.getElementById("start-screen").classList.add("d-none");
     document.getElementById("game-screen").classList.remove("d-none");
