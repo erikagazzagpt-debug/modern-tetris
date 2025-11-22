@@ -39,8 +39,7 @@ let dropCounter=0, dropInterval=500, lastTime=0;
 function collide(board,piece){
   for(let y=0;y<piece.shape.length;y++){
     for(let x=0;x<piece.shape[y].length;x++){
-      if(piece.shape[y][x] && (board[piece.y+y] && board[piece.y+y][piece.x+x])!==0)
-        return true;
+      if(piece.shape[y][x] && (board[piece.y+y] && board[piece.y+y][piece.x+x])!==0) return true;
     }
   }
   return false;
@@ -64,18 +63,12 @@ function drawNext(){
   nextCtx.fillRect(0,0,nextCanvas.width,nextCanvas.height);
   nextPiece.shape.forEach((row,y)=>{
     row.forEach((v,x)=>{
-      if(v){
-        nextCtx.fillStyle = COLORS[v];
-        nextCtx.fillRect(x*15,y*15,14,14);
-      }
+      if(v){ nextCtx.fillStyle=COLORS[v]; nextCtx.fillRect(x*15,y*15,14,14); }
     });
   });
 }
 
-function lightningFlash(){
-  flash.classList.add('show');
-  setTimeout(()=>flash.classList.remove('show'),150);
-}
+function lightningFlash(){ flash.classList.add('show'); setTimeout(()=>flash.classList.remove('show'),150); }
 
 function clearLines(){
   let cleared=false;
@@ -92,15 +85,12 @@ function clearLines(){
 }
 
 function draw(){
-  ctx.fillStyle='#000';
+  ctx.fillStyle='#6fa8ff';
   ctx.fillRect(0,0,canvas.width,canvas.height);
 
   board.forEach((row,y)=>{
     row.forEach((v,x)=>{
-      if(v){
-        ctx.fillStyle = v===99 ? 'white' : COLORS[v];
-        ctx.fillRect(x*grid,y*grid,grid-1,grid-1);
-      }
+      if(v){ ctx.fillStyle=v===99?'white':COLORS[v]; ctx.fillRect(x*grid,y*grid,grid-1,grid-1); }
     });
   });
 
@@ -108,7 +98,7 @@ function draw(){
     piece.shape.forEach((row,y)=>{
       row.forEach((v,x)=>{
         if(v){
-          ctx.fillStyle = COLORS[v];
+          ctx.fillStyle=COLORS[v];
           ctx.fillRect((piece.x+x)*grid,(piece.y+y)*grid,grid-1,grid-1);
         }
       });

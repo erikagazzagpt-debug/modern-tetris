@@ -7,6 +7,8 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  touch-action: manipulation;
+  overscroll-behavior: none;
 }
 .screen { display: flex; justify-content: center; align-items: center; height: 100%; }
 .hidden { display: none !important; }
@@ -20,15 +22,19 @@ body {
 #top-info { display: flex; justify-content: space-between; align-items: center; }
 #next-preview {
   background: rgba(0,0,0,0.5);
-  padding: 8px;
+  padding: 5px;
   border: 1px solid white;
   border-radius: 6px;
-  width: 85px;
+  width: 70px;
 }
-#tetris, #next {
-  background: #000;
+#tetris {
+  background: #6fa8ff;
   image-rendering: pixelated;
   margin-top: 10px;
+}
+#next {
+  background: #000;
+  image-rendering: pixelated;
 }
 .controls {
   margin-top: 10px;
