@@ -46,6 +46,9 @@ function collide(arena, player) {
 function merge(arena, player) {
     player.matrix.forEach((row, y) => { row.forEach((value, x) => { if (value !== 0) { arena[y + player.pos.y][x + player.pos.x] = white; } }); });
 }
+function rotate(matrix) {
+    return matrix.map((_, i) => matrix.map(row => row[i]).reverse());
+}
 function generateRandomPiece() {
     const type = pieces[(Math.random() * pieces.length) | 0];
     return {
@@ -135,7 +138,14 @@ function resetGame() {
     update();
 }
 
-document.getElementById("rotate").onclick = () => { const r = rotate(player.matrix); const p = player.matrix; player.matrix = r; if (collide(arena, player)) player.matrix = p; };
+function playerRotate() {
+    const r = rotate(player.matrix);
+    const p = player.matrix;
+    player.matrix = r;
+    if (collide(arena, player)) {
+        player.matrix = p;
+    }
+}
 
 function addRepeatListener(elementId, action) {
     const element = document.getElementById(elementId);
@@ -170,6 +180,7 @@ function addRepeatListener(elementId, action) {
 addRepeatListener("left", () => { player.pos.x--; if (collide(arena, player)) player.pos.x++; });
 addRepeatListener("right", () => { player.pos.x++; if (collide(arena, player)) player.pos.x--; });
 addRepeatListener("down", playerDrop);
+addRepeatListener("rotate", playerRotate);
 document.getElementById("startBtn").onclick = () => {
     document.getElementById("start-screen").classList.add("d-none");
     document.getElementById("game-screen").classList.remove("d-none");
